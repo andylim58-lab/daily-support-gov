@@ -186,7 +186,7 @@ html_content = f"""
 """
 
 current_folder = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(current_folder, "support_programs.html")
+file_path = os.path.join(current_folder, "index.html")
 
 with open(file_path, "w", encoding="utf-8") as file:
     file.write(html_content)
