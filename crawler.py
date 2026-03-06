@@ -8,8 +8,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-print("🤖 날짜 판독기를 업그레이드하여 공고 수집을 시작합니다...")
+print("🤖 지원사업 수집 및 index.html 생성을 시작합니다...")
 
+# 브라우저 설정
 chrome_options = Options()
 chrome_options.add_argument("--headless=new") 
 chrome_options.add_argument("--no-sandbox")
@@ -20,175 +21,79 @@ chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
-today_str = datetime.today().strftime('%Y-%m-%d')
 target_date = "2026-02-20" # 기준일
 crawled_data = []
 
 def extract_dates(text):
-    """YYYY.MM.DD 뿐만 아니라 YY.MM.DD (예: 26.02.20) 형식도 찾아내어 통일합니다"""
-    # 20이 있거나 없거나 숫자 2개-숫자 2개-숫자 2개 패턴을 모두 찾습니다.
+    """YY.MM.DD 형식을 YYYY-MM-DD로 정규화합니다."""
     matches = re.findall(r'(?:20)?\d{2}[-./]\d{2}[-./]\d{2}', text)
     normalized_dates = []
     for d in matches:
         d = d.replace('.', '-').replace('/', '-')
-        if len(d) == 8: # 26-02-20 처럼 짧은 형태면 앞에 20을 붙여 2026-02-20으로 만듦
+        if len(d) == 8: # 26-02-20 -> 2026-02-20
             d = '20' + d
         normalized_dates.append(d)
     return normalized_dates
 
 # --- 1. 중소벤처기업부 ---
-print("▶ 중소벤처기업부 탐색 중...")
 try:
-    mss_url = "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310"
-    driver.get(mss_url)
+    driver.get("https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310")
     time.sleep(5) 
-    
     rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
-    count = 0
     for row in rows:
-        text_content = row.text
-        dates = extract_dates(text_content)
-        
+        dates = extract_dates(row.text)
         start_date = dates[0] if len(dates) > 0 else "날짜확인불가"
-        end_date = dates[1] if len(dates) > 1 else "상세확인"
-        
-        if start_date != "날짜확인불가" and start_date < target_date:
-            continue
-            
+        if start_date != "날짜확인불가" and start_date < target_date: continue
         a_tag = row.find_element(By.CSS_SELECTOR, "a")
-        title = a_tag.text.strip()
-        
-        if title and len(title) > 10:
-            link = a_tag.get_attribute('href')
-            onclick = a_tag.get_attribute('onclick')
-            if link and ("javascript" in link.lower() or link.endswith("#")) and onclick:
-                numbers = re.findall(r'\d+', onclick)
-                if numbers:
-                    post_id = max(numbers, key=len)
-                    link = f"https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=310&bcIdx={post_id}"
-                else:
-                    link = mss_url 
-                    
-            crawled_data.append({'title': title, 'source': '중기부', 'start': start_date, 'end': end_date, 'url': link})
-            count += 1
-            
-    print(f"✅ 중기부 {count}개 수집 완료 (2/20 이후)")
-except Exception as e:
-    print(f"❌ 중기부 에러: {e}")
+        crawled_data.append({'title': a_tag.text.strip(), 'source': '중기부', 'start': start_date, 'end': dates[1] if len(dates) > 1 else "상세확인", 'url': a_tag.get_attribute('href')})
+except: pass
 
 # --- 2. 기업마당 ---
-print("▶ 기업마당 탐색 중...")
 try:
-    biz_url = "https://www.bizinfo.go.kr/sii/siia/selectSIIA200View.do"
-    driver.get(biz_url)
-    time.sleep(5) 
-    
+    driver.get("https://www.bizinfo.go.kr/sii/siia/selectSIIA200View.do")
+    time.sleep(5)
     rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
-    count = 0
     for row in rows:
-        text_content = row.text
-        dates = extract_dates(text_content)
+        dates = extract_dates(row.text)
         start_date = dates[0] if len(dates) > 0 else "날짜확인불가"
-        end_date = dates[1] if len(dates) > 1 else "상세확인"
-        
-        if start_date != "날짜확인불가" and start_date < target_date:
-            continue
-            
-        try:
-            a_tag = row.find_element(By.CSS_SELECTOR, "a")
-            title = a_tag.text.strip()
-            link = a_tag.get_attribute('href')
-            
-            if title and len(title) > 10:
-                if link and ("javascript" in link.lower() or link.endswith("#")):
-                    link = biz_url
-                crawled_data.append({'title': title, 'source': '기업마당', 'start': start_date, 'end': end_date, 'url': link})
-                count += 1
-        except:
-            continue
-            
-    print(f"✅ 기업마당 {count}개 수집 완료 (2/20 이후)")
-except Exception as e:
-    print(f"❌ 기업마당 에러: {e}")
-
-# --- 3. 한국콘텐츠진흥원 (접수시작일/마감일 반영) ---
-print("▶ 한국콘텐츠진흥원 탐색 중...")
-try:
-    kocca_url = "https://www.kocca.kr/kocca/pims/list.do?menuNo=204104"
-    driver.get(kocca_url)
-    time.sleep(3)
-    
-    rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
-    count = 0
-    for row in rows:
-        text_content = row.text
-        # 업그레이드된 함수가 26.02.20을 2026-02-20으로 자동 변환해줍니다!
-        dates = extract_dates(text_content)
-        start_date = dates[0] if len(dates) > 0 else "날짜확인불가"
-        end_date = dates[1] if len(dates) > 1 else "상세확인"
-        
-        if start_date != "날짜확인불가" and start_date < target_date:
-            continue
-            
+        if start_date != "날짜확인불가" and start_date < target_date: continue
         a_tag = row.find_element(By.CSS_SELECTOR, "a")
-        title = a_tag.text.strip()
-        link = a_tag.get_attribute('href')
-        if title:
-            crawled_data.append({'title': title, 'source': '콘진원', 'start': start_date, 'end': end_date, 'url': link})
-            count += 1
-    print(f"✅ 콘진원 {count}개 수집 완료 (2/20 이후)")
-except Exception as e:
-    print(f"❌ 콘진원 에러: {e}")
+        crawled_data.append({'title': a_tag.text.strip(), 'source': '기업마당', 'start': start_date, 'end': dates[1] if len(dates) > 1 else "상세확인", 'url': "https://www.bizinfo.go.kr/sii/siia/selectSIIA200View.do"})
+except: pass
+
+# --- 3. 한국콘텐츠진흥원 ---
+try:
+    driver.get("https://www.kocca.kr/kocca/pims/list.do?menuNo=204104")
+    time.sleep(5)
+    rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
+    for row in rows:
+        dates = extract_dates(row.text)
+        start_date = dates[0] if len(dates) > 0 else "날짜확인불가"
+        if start_date != "날짜확인불가" and start_date < target_date: continue
+        a_tag = row.find_element(By.CSS_SELECTOR, "a")
+        crawled_data.append({'title': a_tag.text.strip(), 'source': '콘진원', 'start': start_date, 'end': dates[1] if len(dates) > 1 else "상세확인", 'url': a_tag.get_attribute('href')})
+except: pass
 
 driver.quit()
 
-# --- HTML 조립 및 바탕화면 저장 ---
-print("\n웹페이지(HTML)를 생성합니다...")
+# --- HTML 생성 ---
 table_rows = ""
 for idx, data in enumerate(crawled_data, 1):
-    table_rows += f"""
-    <tr>
-        <td>{idx}</td>
-        <td class="title-column" style="text-align: left; font-weight: 500;">{data['title']}</td>
-        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; background-color: #f1f3f5;">{data['source']}</span></td>
-        <td>{data['start']}</td>
-        <td>{data['end']}</td>
-        <td><a href="{data['url']}" target="_blank" style="color: #000; text-decoration: none; border: 1px solid #000; padding: 4px 10px; font-size: 0.9em;">바로가기</a></td>
-    </tr>
-    """
+    table_rows += f"<tr><td>{idx}</td><td style='text-align:left;'>{data['title']}</td><td>{data['source']}</td><td>{data['start']}</td><td>{data['end']}</td><td><a href='{data['url']}' target='_blank'>바로가기</a></td></tr>"
 
 html_content = f"""
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>지원사업 통합 공고 목록</title>
-    <style>
-        body {{ font-family: 'Pretendard', 'Malgun Gothic', sans-serif; background-color: #ffffff; color: #000000; margin: 40px; line-height: 1.6; }}
-        h2 {{ text-align: center; margin-bottom: 30px; font-weight: 800; }}
-        table {{ width: 100%; border-collapse: collapse; border-top: 2px solid #000; }}
-        th {{ background-color: #f8f9fa; font-weight: bold; padding: 15px 10px; border-bottom: 1px solid #000; }}
-        td {{ padding: 15px 10px; text-align: center; border-bottom: 1px solid #e3f2fd; }}
-    </style>
-</head>
-<body>
-    <h2>📅 오늘의 지원사업 통합 공고 (기준: 2월 20일 이후)</h2>
-    <table>
-        <thead>
-            <tr><th>연번</th><th>공고제목</th><th>출처</th><th>시작일</th><th>마감일</th><th>URL</th></tr>
-        </thead>
-        <tbody>
-            {table_rows}
-        </tbody>
-    </table>
-</body>
+<head><meta charset="UTF-8"><title>지원사업 목록</title><style>body{{font-family:sans-serif;padding:20px;}}table{{width:100%;border-collapse:collapse;}}th,td{{border:1px solid #ddd;padding:12px;text-align:center;}}th{{background:#f4f4f4;}}</style></head>
+<body><h2>📅 지원사업 통합 공고 (기준: 2월 20일 이후)</h2><table><thead><tr><th>번호</th><th>제목</th><th>출처</th><th>시작일</th><th>마감일</th><th>링크</th></tr></thead><tbody>{table_rows}</tbody></table></body>
 </html>
 """
 
-current_folder = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(current_folder, "index.html")
+# ★★★ 여기가 가장 중요합니다! ★★★
+# 경로 계산 없이 현재 폴더에 index.html 이라는 이름으로 바로 저장합니다.
+file_path = "index.html" 
 
 with open(file_path, "w", encoding="utf-8") as file:
     file.write(html_content)
 
-print(f"🎉 완료되었습니다! 바탕화면의 'support_programs.html'을 열어보세요.")
+print(f"🎉 성공! {file_path} 파일이 생성되었습니다.")
