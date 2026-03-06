@@ -2,37 +2,32 @@ name: Daily Support Program Crawler
 
 on:
   schedule:
-    # 매일 한국시간 오전 9시 (UTC 00:00)에 실행
-    - cron: '0 0 * * *'
-  workflow_dispatch: # 수동으로도 실행할 수 있게 버튼을 만듭니다.
+    - cron: '0 0 * * *' # 매일 아침 9시 (KST)
+  workflow_dispatch: # 수동 실행 버튼
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # 깃허브가 결과 파일을 저장할 수 있는 권한
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout storage
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install selenium webdriver-manager
+      - name: Install dependencies
+        run: |
+          pip install selenium webdriver-manager
 
-    - name: Run crawler
-      run: python crawler.py
+      - name: Run crawler
+        run: python crawler.py
 
-    - name: Commit and Push changes
-      run: |
-        git config --global user.name "GitHub Action"
-        git config --global user.email "action@github.com"
-        git add support_programs.html
-        git commit -m "Update daily support programs" || exit 0
-        git push
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add index.html
+          git commit -m "Update daily support programs" || echo "No changes to commit"
+          git push --force
