@@ -16,7 +16,7 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
-target_date = "2026-02-20"
+target_date = "2026-01-01"
 crawled_data = []
 
 def extract_dates(text):
@@ -57,3 +57,4 @@ html_content = f"<html><head><meta charset='utf-8'><style>table{{width:100%;bord
 # ★ 파일명을 index.html로 강제 고정 ★
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(html_content)
+
