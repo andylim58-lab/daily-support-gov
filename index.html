@@ -5,187 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>지원사업 통합 공고</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
+    body { font-family: sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
     h1 { font-size: 1.4rem; }
+    .meta { color: #888; font-size: 0.85rem; margin-bottom: 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #f2f2f2; }
+    th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
+    th { background: #f2f2f2; white-space: nowrap; }
     tr:hover { background: #f9f9f9; }
-    a { color: #0070f3; }
-    .meta { color: #888; font-size: 0.8rem; margin-bottom: 10px; }
+    a { color: #0070f3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .pagination { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .pagination button {
+      padding: 6px 12px; border: 1px solid #ddd; background: #fff;
+      cursor: pointer; border-radius: 4px; font-size: 0.85rem;
+    }
+    .pagination button.active {
+      background: #0070f3; color: #fff; border-color: #0070f3; font-weight: bold;
+    }
+    .pagination button:hover:not(.active) { background: #f0f0f0; }
   </style>
 </head>
 <body>
   <h1>📅 지원사업 통합 공고</h1>
-  <p class="meta">마지막 업데이트: 2026-04-20 | 총 20건 (최근 30일 기준)</p>
+  <p class="meta">마지막 업데이트: 2026-04-20 | 누적 총 <span id="total"></span>건</p>
   <table>
     <thead>
       <tr>
         <th>번호</th><th>제목</th><th>출처</th><th>공고일</th><th>마감일</th><th>링크</th>
       </tr>
     </thead>
-    <tbody>
-    <tr>
-      <td>1</td>
-      <td>2026년도 중소기업 정책자금 융자계획 변경공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>2026년 중소기업 혁신바우처(채용지원) 사업 지원계획 공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>2026년 대한민국 소상공인 대회 유공자 포상 공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>2026년도 R&D성과확산 스마트공장 구축 지원사업 2차 공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>2026년 제조창업활성화 제품화 올인원팩 창업기업 모집공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>2026년도 자율형공장 구축 지원사업 2차 공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td>2026년 재도전성공패키지(추경) 모집공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td>2026년도 소상공인 정책자금 융자계획 변경(2차) 공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>9</td>
-      <td>「모두의 창업 프로젝트」 통합 모집 수정공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>10</td>
-      <td>2026년 수출지원기반활용사업 참여기업 2차 모집 수정공고</td>
-      <td>중기부</td>
-      <td>2026-04-20</td>
-      <td>상세확인</td>
-      <td><a href="https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>11</td>
-      <td>싱가포르 K-콘텐츠·IP 파트너십 데이 참가기업 모집공고</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.17</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00088003&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>12</td>
-      <td><2026 콘텐츠 스타트업 해외마켓(Ai4, SWITCH)> 참가기업 추가모집 공고</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.17</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00068006&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>13</td>
-      <td>2026년 대중음악 공연 지역개최 활성화</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.16</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=126D00110008&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>14</td>
-      <td>2026년 인공지능 콘텐츠 제작지원(협력형) 수행기업 추가모집 공고</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.14</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=226D00103002&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>15</td>
-      <td>2026년 중소제작사 성장 서비스 지원 참가기업 모집</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.14</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00107003&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>16</td>
-      <td><2026 K-콘텐츠 대만수출상담회> 참가기업 모집 공고</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.13</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00088002&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>17</td>
-      <td>2026년 CKL스테이지 수시대관(1차) 공고</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.13</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00068005&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>18</td>
-      <td>2026년 러시아 만화웹툰 비즈니스 상담회 참가기업 모집 공고</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.10</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00089005&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>19</td>
-      <td>2026년 화면해설방송 제작지원작 공모</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.09</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00085003&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    <tr>
-      <td>20</td>
-      <td>2026 체코 k-콘텐츠 엑스포 참가기업 모집</td>
-      <td>콘진원</td>
-      <td>2026-04-20</td>
-      <td>26.04.08</td>
-      <td><a href="https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00086002&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=" target="_blank">링크</a></td>
-    </tr>
-    </tbody>
+    <tbody id="tableBody"></tbody>
   </table>
+  <div class="pagination" id="pagination"></div>
+
+  <script>
+    const data = [{"title": "2026년도 중소기업 정책자금 융자계획 변경공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년 중소기업 혁신바우처(채용지원) 사업 지원계획 공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년 대한민국 소상공인 대회 유공자 포상 공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년도 R&D성과확산 스마트공장 구축 지원사업 2차 공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년 제조창업활성화 제품화 올인원팩 창업기업 모집공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년도 자율형공장 구축 지원사업 2차 공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년 재도전성공패키지(추경) 모집공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026년도 소상공인 정책자금 융자계획 변경(2차) 공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "「모두의 창업 프로젝트」 통합 모집 수정공고", "source": "중기부", "post_date": "2026-04-20", "deadline": "상세확인", "url": "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310#view"}, {"title": "2026 더현대글로벌×더셀렉츠 글로벌 팝업스토어(일본 도쿄)", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.20", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00091005&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026 더현대글로벌×더셀렉츠 글로벌 팝업스토어(프랑스 파리) 참가사 모집", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.20", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00091004&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "싱가포르 K-콘텐츠·IP 파트너십 데이 참가기업 모집공고", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.17", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00088003&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "<2026 콘텐츠 스타트업 해외마켓(Ai4, SWITCH)> 참가기업 추가모집 공고", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.17", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00068006&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026년 대중음악 공연 지역개최 활성화", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.16", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=126D00110008&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026년 인공지능 콘텐츠 제작지원(협력형) 수행기업 추가모집 공고", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.14", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=226D00103002&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026년 중소제작사 성장 서비스 지원 참가기업 모집", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.14", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00107003&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "<2026 K-콘텐츠 대만수출상담회> 참가기업 모집 공고", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.13", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00088002&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026년 CKL스테이지 수시대관(1차) 공고", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.13", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00068005&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026년 러시아 만화웹툰 비즈니스 상담회 참가기업 모집 공고", "source": "콘진원", "post_date": "2026-04-20", "deadline": "26.04.10", "url": "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00089005&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd="}, {"title": "2026년 AI기반 의료시스템 디지털 전환 지원(AI특화병원 AX-Ready 시범사업) 사업 공고", "source": "NIPA", "post_date": "2026-04-20", "deadline": "D-36", "url": "https://www.nipa.kr/home/2-2/16728"}, {"title": "2026년 산업전문인력 AI역량강화 지원사업 발표평가 결과 및 지원 대상과제 선정 공고", "source": "NIPA", "post_date": "2026-04-20", "deadline": "상시\n모집", "url": "https://www.nipa.kr/home/2-2/16726"}, {"title": "2026년 코리아 국제 스트리밍 페스티벌 투자유치 쇼케이스 참가 기업 모집 공고(기간연장)", "source": "NIPA", "post_date": "2026-04-17", "deadline": "D-10", "url": "https://www.nipa.kr/home/2-2/16725"}, {"title": "싱가포르IT지원센터 2026년 상반기 입주기업 모집 공고", "source": "NIPA", "post_date": "2026-04-15", "deadline": "D-28", "url": "https://www.nipa.kr/home/2-2/16720"}, {"title": "2026년도 호치민IT지원센터 공간 효율화를 위한 인테리어 용역 입찰 공고", "source": "NIPA", "post_date": "2026-04-13", "deadline": "D-7", "url": "https://www.nipa.kr/home/2-2/16712"}, {"title": "2026년 산업전문인력 AI역량강화 지원사업 서류평가 결과 및 발표평가 대상자 선정 공고", "source": "NIPA", "post_date": "2026-04-08", "deadline": "상시\n모집", "url": "https://www.nipa.kr/home/2-2/16691"}, {"title": "2026년 1차 ICT 비즈니스 파트너십(아세안) 참가기업 모집", "source": "NIPA", "post_date": "2026-04-06", "deadline": "D-7", "url": "https://www.nipa.kr/home/2-2/16682"}, {"title": "하노이 IT지원센터 ‘26년 상반기 연간/단기 입주기업 모집 공고", "source": "NIPA", "post_date": "2026-04-06", "deadline": "오늘\n마감", "url": "https://www.nipa.kr/home/2-2/16680"}, {"title": "2026년 AI·디지털전환 혁신기업 해외실증 지원 사업 참여기업 모집 공고", "source": "NIPA", "post_date": "2026-04-06", "deadline": "종료", "url": "https://www.nipa.kr/home/2-2/16676"}, {"title": "2026년 DNA 융합 제품·서비스 해외진출 지원 사업 참여기업 모집 공고", "source": "NIPA", "post_date": "2026-04-06", "deadline": "D-163", "url": "https://www.nipa.kr/home/2-2/16675"}, {"title": "[재공고]2026년 소프트웨어 인재키움 사업 수행지역 및 기관 선정 공고", "source": "NIPA", "post_date": "2026-04-03", "deadline": "D-14", "url": "https://www.nipa.kr/home/2-2/16671"}, {"title": "2026년 SW IP(지식재산권) 평가보증 지원사업 신청안내", "source": "NIPA", "post_date": "2026-04-02", "deadline": "상시\n모집", "url": "https://www.nipa.kr/home/2-2/16669"}, {"title": "「K-테크 파이오니어즈」 글로벌 한국 인재·팀 모집 공고", "source": "NIPA", "post_date": "2026-04-02", "deadline": "D-8", "url": "https://www.nipa.kr/home/2-2/16666"}, {"title": "「첨단 GPU 활용 지원 사업」사용자 수시 모집 공고", "source": "NIPA", "post_date": "2026-04-01", "deadline": "D-224", "url": "https://www.nipa.kr/home/2-2/16668"}, {"title": "2026년「디지털콘텐츠 융합기업 글로벌 마켓 참가사업(AWE USA 2026) 지원기업 모집 공고", "source": "NIPA", "post_date": "2026-04-01", "deadline": "D-10", "url": "https://www.nipa.kr/home/2-2/16665"}, {"title": "2026년도 AI 통합 바우처(클라우드 바우처) 지원 사업 수정공고", "source": "NIPA", "post_date": "2026-04-01", "deadline": "D-1", "url": "https://www.nipa.kr/home/2-2/16664"}, {"title": "2026년 KoVAC XR 쇼룸 입주기업 모집 공고", "source": "NIPA", "post_date": "2026-04-01", "deadline": "D-8", "url": "https://www.nipa.kr/home/2-2/16662"}, {"title": "2026년 클라우드컴퓨팅 전문인력 양성기관 신규 지정 공고", "source": "NIPA", "post_date": "2026-03-30", "deadline": "D-9", "url": "https://www.nipa.kr/home/2-2/16626"}, {"title": "2026년 지속가능한 데이터센터 산업 발전 지원 사업 통합 공고", "source": "NIPA", "post_date": "2026-03-30", "deadline": "D-10", "url": "https://www.nipa.kr/home/2-2/16615"}, {"title": "2026년도 『인공지능 루키(AI Rookie)』대회 공고", "source": "NIPA", "post_date": "2026-03-30", "deadline": "D-18", "url": "https://www.nipa.kr/home/2-2/16614"}, {"title": "2026년도 『인공지능 챔피언(AI Champion)』대회 공고", "source": "NIPA", "post_date": "2026-03-30", "deadline": "D-4", "url": "https://www.nipa.kr/home/2-2/16613"}, {"title": "2026년 1차 XR기업성장지원센터(상암 누리꿈스퀘어) 신규 입주기업 모집 공고", "source": "NIPA", "post_date": "2026-03-27", "deadline": "D-3", "url": "https://www.nipa.kr/home/2-2/16608"}, {"title": "2026년도 과학기술정보통신부「고성능컴퓨팅지원」사업 사용자 모집 공고", "source": "NIPA", "post_date": "2026-03-25", "deadline": "D-3", "url": "https://www.nipa.kr/home/2-2/16602"}, {"title": "2026년 온디바이스 AI 서비스 실증·확산 사업 신규과제 모집공고", "source": "NIPA", "post_date": "2026-03-24", "deadline": "D-10", "url": "https://www.nipa.kr/home/2-2/16598"}, {"title": "2026년 SaaS 개발·사업화 지원 사업 공고", "source": "NIPA", "post_date": "2026-03-23", "deadline": "D-2", "url": "https://www.nipa.kr/home/2-2/16597"}, {"title": "2026년 GovTech 창업기업 AI 실증·사업화 지원사업 모집 공고", "source": "NIPA", "post_date": "2026-03-23", "deadline": "D-3", "url": "https://www.nipa.kr/home/2-2/16596"}, {"title": "2026년 3D프린팅 전문인력 양성교육 운영기관 모집 공고", "source": "NIPA", "post_date": "2026-03-23", "deadline": "D-2", "url": "https://www.nipa.kr/home/2-2/16594"}, {"title": "2026년 글로벌 SaaS 마켓플레이스 지원 사업수행기관 모집 공고", "source": "NIPA", "post_date": "2026-03-21", "deadline": "종료", "url": "https://www.nipa.kr/home/2-2/16593"}];
+    const PER_PAGE = 20;
+    let currentPage = 1;
+
+    document.getElementById("total").textContent = data.length;
+
+    function renderTable(page) {
+      currentPage = page;
+      const start = (page - 1) * PER_PAGE;
+      const slice = data.slice(start, start + PER_PAGE);
+      document.getElementById("tableBody").innerHTML = slice.map((item, i) => `
+        <tr>
+          <td>${start + i + 1}</td>
+          <td>${item.title}</td>
+          <td>${item.source}</td>
+          <td>${item.post_date}</td>
+          <td>${item.deadline}</td>
+          <td><a href="${item.url}" target="_blank">링크</a></td>
+        </tr>
+      `).join("");
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(data.length / PER_PAGE);
+      const groupSize = 10;
+      const groupStart = Math.floor((currentPage - 1) / groupSize) * groupSize + 1;
+      const groupEnd = Math.min(groupStart + groupSize - 1, totalPages);
+      let html = "";
+      if (groupStart > 1) {
+        html += `<button onclick="renderTable(${groupStart - 1})">◀ 이전</button>`;
+      }
+      for (let p = groupStart; p <= groupEnd; p++) {
+        html += `<button class="${p === currentPage ? 'active' : ''}" onclick="renderTable(${p})">${p}</button>`;
+      }
+      if (groupEnd < totalPages) {
+        html += `<button onclick="renderTable(${groupEnd + 1})">다음 ▶</button>`;
+      }
+      document.getElementById("pagination").innerHTML = html;
+    }
+
+    renderTable(1);
+  </script>
 </body>
 </html>
