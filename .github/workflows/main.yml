@@ -36,6 +36,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add index.html
+          git add index.html history.json
           git commit -m "Update: $(date '+%Y-%m-%d') 지원사업 공고 갱신" || echo "No changes"
           git push
