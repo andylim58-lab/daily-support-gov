@@ -7,6 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # ── 날짜 기준 ────────────────────────────────────────────────
@@ -173,6 +175,58 @@ try:
 except Exception as e:
     print(f"NIPA 오류: {e}")
 
+# ── 5. 판판대로 (중소기업유통센터) ──────────────────────────
+print("🔎 판판대로 수집 중...")
+try:
+    for page in range(1, 4):
+        url = f"https://fanfandaero.kr/portal/v2/preSprtBizPbanc.do?pageIndex={page}"
+        driver.get(url)
+        time.sleep(4)
+
+        # 공고 목록 카드 또는 테이블 행 탐색
+        items = driver.find_elements(By.CSS_SELECTOR, "ul.board-list li, table tbody tr, .card-item, .list-item")
+        stop_page = False
+
+        for item in items:
+            try:
+                # 제목 링크 추출
+                title_el = item.find_element(By.CSS_SELECTOR, "a")
+                title = title_el.text.strip()
+                if not title:
+                    # span, strong 태그에서도 시도
+                    title = item.find_element(By.CSS_SELECTOR, "strong, span.title, .tit").text.strip()
+                if not title:
+                    continue
+
+                href = title_el.get_attribute("href") or url
+
+                # 날짜 텍스트 전체에서 추출
+                full_text = item.text
+                dates = normalize_date(full_text)
+                post_date = dates[0] if dates else today_str
+
+                if post_date < cutoff_date:
+                    stop_page = True
+                    continue
+
+                # 마감일: 두 번째 날짜가 있으면 마감일
+                deadline = dates[1] if len(dates) > 1 else "상세확인"
+
+                new_data.append({
+                    "title": title,
+                    "source": "판판대로",
+                    "post_date": post_date,
+                    "deadline": deadline,
+                    "url": href
+                })
+            except:
+                continue
+
+        if stop_page:
+            break
+except Exception as e:
+    print(f"판판대로 오류: {e}")
+
 driver.quit()
 print(f"✅ 오늘 신규 수집: {len(new_data)}건")
 
@@ -185,7 +239,6 @@ if os.path.exists(HISTORY_FILE):
 else:
     history = []
 
-# 중복 제거 (제목 + 공고일 기준)
 existing_keys = {(item["title"], item["post_date"]) for item in history}
 added = 0
 for item in new_data:
@@ -197,10 +250,8 @@ for item in new_data:
 
 print(f"✅ 신규 추가: {added}건 / 누적 총 {len(history)}건")
 
-# 최신순 정렬
 history.sort(key=lambda x: x["post_date"], reverse=True)
 
-# 누적 데이터 저장
 with open(HISTORY_FILE, "w", encoding="utf-8") as f:
     json.dump(history, f, ensure_ascii=False, indent=2)
 
