@@ -28,6 +28,18 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 
 new_data = []
 
+# ── 키워드 필터 ──────────────────────────────────────────────
+KEYWORDS = [
+    '마케팅', '디지털마케팅', '온라인마케팅', '광고', '홍보', '판로', '판로개척',
+    '유통', '온라인판로', '쇼핑몰', '라이브커머스', '콘텐츠', '브랜딩',
+    '미디어', '방송', 'TV', 'CTV', 'OTT', '영상', 'SNS', '인플루언서',
+    'AI마케팅', '데이터마케팅', '퍼포먼스', '전자상거래'
+]
+
+def is_relevant(title):
+    title_lower = title.lower()
+    return any(k.lower() in title_lower for k in KEYWORDS)
+
 # ── 날짜 정규화 ──────────────────────────────────────────────
 def normalize_date(text):
     matches = re.findall(r'\d{2,4}[-./]\d{1,2}[-./]\d{1,2}', text)
@@ -40,16 +52,6 @@ def normalize_date(text):
                 y = "20" + y
             results.append(f"{y}-{m.zfill(2)}-{dd.zfill(2)}")
     return sorted(list(set(results)))
-
-# ── 지역 필터 (서울/전국만) ──────────────────────────────────
-def is_target_region(title):
-    exclude_keywords = ['강원', '경기', '경남', '경북', '광주', '대구', '대전',
-                        '부산', '세종', '울산', '인천', '전남', '전북', '제주',
-                        '충남', '충북', '지방']
-    if any(k in title for k in exclude_keywords):
-        if '서울' not in title and '전국' not in title:
-            return False
-    return True
 
 # ── 1. 중소벤처기업부 ────────────────────────────────────────
 print("🔎 중기부 수집 중...")
@@ -64,14 +66,12 @@ try:
                 continue
             title_el = row.find_element(By.CSS_SELECTOR, "td a")
             title = title_el.text.strip()
-            if not title:
+            if not title or not is_relevant(title):
                 continue
             href = title_el.get_attribute("href") or "https://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=310"
             post_date = normalize_date(cols[-1].text.strip())
             post_date = post_date[0] if post_date else today_str
             if post_date < cutoff_date:
-                continue
-            if not is_target_region(title):
                 continue
             new_data.append({"title": title, "source": "중기부", "post_date": post_date, "deadline": "상세확인", "url": href})
         except:
@@ -92,15 +92,13 @@ try:
                 continue
             title_el = row.find_element(By.CSS_SELECTOR, "td a")
             title = title_el.text.strip()
-            if not title:
+            if not title or not is_relevant(title):
                 continue
             href = title_el.get_attribute("href") or "https://www.bizinfo.go.kr"
             post_date = normalize_date(cols[2].text.strip())
             post_date = post_date[0] if post_date else today_str
             deadline = cols[3].text.strip()[:10] if len(cols) > 3 else "상세확인"
             if post_date < cutoff_date:
-                continue
-            if not is_target_region(title):
                 continue
             new_data.append({"title": title, "source": "기업마당", "post_date": post_date, "deadline": deadline, "url": href})
         except:
@@ -121,7 +119,7 @@ try:
                 continue
             title_el = row.find_element(By.CSS_SELECTOR, "td a")
             title = title_el.text.strip()
-            if not title:
+            if not title or not is_relevant(title):
                 continue
             href = title_el.get_attribute("href") or "https://www.kocca.kr"
             post_date = normalize_date(cols[1].text.strip())
@@ -150,7 +148,7 @@ try:
                     continue
                 title_el = row.find_element(By.CSS_SELECTOR, "td a")
                 title = title_el.text.strip()
-                if not title:
+                if not title or not is_relevant(title):
                     continue
                 href = title_el.get_attribute("href") or "https://www.nipa.kr/home/2-2"
                 post_date = normalize_date(cols[-1].text.strip())
@@ -188,7 +186,7 @@ try:
                 title = title_el.text.strip()
                 if not title:
                     title = item.find_element(By.CSS_SELECTOR, "strong, span.title, .tit").text.strip()
-                if not title:
+                if not title or not is_relevant(title):
                     continue
                 href = title_el.get_attribute("href") or url
                 full_text = item.text
@@ -218,8 +216,6 @@ try:
     for page in range(1, 4):
         driver.get(f"https://www.kised.or.kr/board.es?mid=a10303000000&bid=0005&nPage={page}")
         time.sleep(3)
-        rows = driver.find_elements(By.CSS_SELECTOR, "ul.board_list li, .board-list li, table tbody tr")
-        # 리스트형 구조 시도
         items = driver.find_elements(By.CSS_SELECTOR, ".board_list li")
         if not items:
             items = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
@@ -228,19 +224,16 @@ try:
             try:
                 title_el = item.find_element(By.CSS_SELECTOR, "a")
                 title = title_el.text.strip()
-                if not title:
+                if not title or not is_relevant(title):
                     continue
                 href = title_el.get_attribute("href") or "https://www.kised.or.kr/board.es?mid=a10303000000&bid=0005"
                 full_text = item.text
-                # 접수기간: "2026-09-21 ~ 2026-10-02" 형식
                 dates = normalize_date(full_text)
-                # 시작일 기준으로 필터
                 post_date = dates[0] if dates else today_str
                 deadline = dates[1] if len(dates) > 1 else "상세확인"
                 if post_date < cutoff_date:
                     stop_page = True
                     continue
-                # 종료된 공고는 수집하되 상태 표시
                 status = "종료" if "종료" in full_text else "진행중"
                 new_data.append({
                     "title": title,
@@ -283,7 +276,7 @@ history.sort(key=lambda x: x["post_date"], reverse=True)
 with open(HISTORY_FILE, "w", encoding="utf-8") as f:
     json.dump(history, f, ensure_ascii=False, indent=2)
 
-# ── index.html 생성 (페이지네이션 포함) ─────────────────────
+# ── index.html 생성 ──────────────────────────────────────────
 PER_PAGE = 20
 all_rows_js = json.dumps(history, ensure_ascii=False)
 
@@ -292,7 +285,7 @@ html_content = f"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>지원사업 통합 공고</title>
+  <title>지원사업 통합 공고 (마케팅·판로·광고)</title>
   <style>
     body {{ font-family: sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }}
     h1 {{ font-size: 1.4rem; }}
@@ -315,7 +308,7 @@ html_content = f"""<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <h1>📅 지원사업 통합 공고</h1>
+  <h1>📅 지원사업 통합 공고 (마케팅·판로·광고)</h1>
   <p class="meta">마지막 업데이트: {today_str} | 누적 총 <span id="total"></span>건</p>
   <table>
     <thead>
