@@ -7,8 +7,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # ── 날짜 기준 ────────────────────────────────────────────────
@@ -182,36 +180,24 @@ try:
         url = f"https://fanfandaero.kr/portal/v2/preSprtBizPbanc.do?pageIndex={page}"
         driver.get(url)
         time.sleep(4)
-
-        # 공고 목록 카드 또는 테이블 행 탐색
         items = driver.find_elements(By.CSS_SELECTOR, "ul.board-list li, table tbody tr, .card-item, .list-item")
         stop_page = False
-
         for item in items:
             try:
-                # 제목 링크 추출
                 title_el = item.find_element(By.CSS_SELECTOR, "a")
                 title = title_el.text.strip()
                 if not title:
-                    # span, strong 태그에서도 시도
                     title = item.find_element(By.CSS_SELECTOR, "strong, span.title, .tit").text.strip()
                 if not title:
                     continue
-
                 href = title_el.get_attribute("href") or url
-
-                # 날짜 텍스트 전체에서 추출
                 full_text = item.text
                 dates = normalize_date(full_text)
                 post_date = dates[0] if dates else today_str
-
                 if post_date < cutoff_date:
                     stop_page = True
                     continue
-
-                # 마감일: 두 번째 날짜가 있으면 마감일
                 deadline = dates[1] if len(dates) > 1 else "상세확인"
-
                 new_data.append({
                     "title": title,
                     "source": "판판대로",
@@ -221,11 +207,54 @@ try:
                 })
             except:
                 continue
-
         if stop_page:
             break
 except Exception as e:
     print(f"판판대로 오류: {e}")
+
+# ── 6. 창업진흥원 (KISED) ────────────────────────────────────
+print("🔎 창업진흥원 수집 중...")
+try:
+    for page in range(1, 4):
+        driver.get(f"https://www.kised.or.kr/board.es?mid=a10303000000&bid=0005&nPage={page}")
+        time.sleep(3)
+        rows = driver.find_elements(By.CSS_SELECTOR, "ul.board_list li, .board-list li, table tbody tr")
+        # 리스트형 구조 시도
+        items = driver.find_elements(By.CSS_SELECTOR, ".board_list li")
+        if not items:
+            items = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
+        stop_page = False
+        for item in items:
+            try:
+                title_el = item.find_element(By.CSS_SELECTOR, "a")
+                title = title_el.text.strip()
+                if not title:
+                    continue
+                href = title_el.get_attribute("href") or "https://www.kised.or.kr/board.es?mid=a10303000000&bid=0005"
+                full_text = item.text
+                # 접수기간: "2026-09-21 ~ 2026-10-02" 형식
+                dates = normalize_date(full_text)
+                # 시작일 기준으로 필터
+                post_date = dates[0] if dates else today_str
+                deadline = dates[1] if len(dates) > 1 else "상세확인"
+                if post_date < cutoff_date:
+                    stop_page = True
+                    continue
+                # 종료된 공고는 수집하되 상태 표시
+                status = "종료" if "종료" in full_text else "진행중"
+                new_data.append({
+                    "title": title,
+                    "source": "창업진흥원",
+                    "post_date": post_date,
+                    "deadline": f"{deadline} ({status})",
+                    "url": href
+                })
+            except:
+                continue
+        if stop_page:
+            break
+except Exception as e:
+    print(f"창업진흥원 오류: {e}")
 
 driver.quit()
 print(f"✅ 오늘 신규 수집: {len(new_data)}건")
@@ -249,7 +278,6 @@ for item in new_data:
         added += 1
 
 print(f"✅ 신규 추가: {added}건 / 누적 총 {len(history)}건")
-
 history.sort(key=lambda x: x["post_date"], reverse=True)
 
 with open(HISTORY_FILE, "w", encoding="utf-8") as f:
