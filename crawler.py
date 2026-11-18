@@ -261,10 +261,25 @@ if os.path.exists(HISTORY_FILE):
 else:
     history = []
 
-existing_keys = {(item["title"], item["post_date"]) for item in history}
+# 제목 기준 중복 판단 (공백 차이는 무시)
+def title_key(title):
+    return re.sub(r"\s+", " ", title).strip()
+
+# 기존 누적 데이터 중복 정리: 같은 제목은 가장 먼저 수집된(공고일이 가장 이른) 1건만 유지
+deduped = {}
+for item in sorted(history, key=lambda x: x["post_date"]):
+    k = title_key(item["title"])
+    if k not in deduped:
+        deduped[k] = item
+removed = len(history) - len(deduped)
+history = list(deduped.values())
+if removed:
+    print(f"🧹 기존 중복 제거: {removed}건")
+
+existing_keys = set(deduped.keys())
 added = 0
 for item in new_data:
-    key = (item["title"], item["post_date"])
+    key = title_key(item["title"])
     if key not in existing_keys:
         history.append(item)
         existing_keys.add(key)
